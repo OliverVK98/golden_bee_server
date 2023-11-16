@@ -1,0 +1,11 @@
+# ninja log v5
+1	927	1700104204025872571	CMakeFiles/golden_bee_server.dir/src/CSV_Data_Controller/CSV_Data_Controller.cpp.o	22c7a14032436b2
+1	5260	1700104208349830078	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
+0	5278	1700104208369829883	CMakeFiles/golden_bee_server.dir/src/main.cpp.o	4d12a3dbe1f53134
+0	6091	1700104209185821936	CMakeFiles/golden_bee_server.dir/src/Router/Router.cpp.o	5b9c5a6e3702f747
+928	6116	1700104209205821741	CMakeFiles/golden_bee_server.dir/src/HTTP_Status_Code/HTTP_Status_Code.cpp.o	a56af9c56a287de7
+6116	7942	1700104211041803943	CMakeFiles/golden_bee_server.dir/src/Router/util/convert_to_JSON.cpp.o	bf34f1ad40f83289
+5278	11912	1700104215001765968	CMakeFiles/golden_bee_server.dir/src/Router/routes/Collections_Routes.cpp.o	19ac15f9d65bbfc3
+5261	12038	1700104215129764751	CMakeFiles/golden_bee_server.dir/src/Router/routes/Items_Routes.cpp.o	5c9a8a5c13152118
+6091	12655	1700104215745758897	CMakeFiles/golden_bee_server.dir/src/Router/routes/Users_Routes.cpp.o	a09e3aeb2179b7dd
+12655	13599	1700104216693749914	golden_bee_server	c53624c52fea94fb

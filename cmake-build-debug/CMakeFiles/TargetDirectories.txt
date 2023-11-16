@@ -1,0 +1,3 @@
+/home/oliver/Desktop/golden_bee_server/cmake-build-debug/CMakeFiles/golden_bee_server.dir
+/home/oliver/Desktop/golden_bee_server/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/oliver/Desktop/golden_bee_server/cmake-build-debug/CMakeFiles/rebuild_cache.dir
