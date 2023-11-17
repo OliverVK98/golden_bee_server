@@ -4,7 +4,7 @@
 
 #include "HTTP_Status_Code.h"
 
-std::unordered_map<int, std::string> HTTPStatusCode::error_code_map {
+std::unordered_map<int, std::string> error_code_map {
     {200, "OK"},
     {201, "Created"},
     {400, "Bad Request"},
@@ -14,8 +14,13 @@ std::unordered_map<int, std::string> HTTPStatusCode::error_code_map {
     {500, "Internal Server Error"},
 };
 
-HTTPStatusCode::HTTPStatusCode(int input_code, httplib::Response& response): res(response), error_code(input_code) {
-    res.status = error_code;
-    res.set_content(error_code_map[error_code], "application/json");
+void send_response_with_HTTP_code(int error_code, httplib::Response& response) {
+    response.status = error_code;
+    response.set_content(error_code_map[error_code],  "application/json");
+}
+
+void send_response_with_HTTP_code(int error_code, const std::string& error_message, httplib::Response& response) {
+    response.status = error_code;
+    response.set_content(error_message,  "application/json");
 }
 

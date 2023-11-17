@@ -1,11 +1,14 @@
 # ninja log v5
-1	927	1700104204025872571	CMakeFiles/golden_bee_server.dir/src/CSV_Data_Controller/CSV_Data_Controller.cpp.o	22c7a14032436b2
-1	5260	1700104208349830078	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
-0	5278	1700104208369829883	CMakeFiles/golden_bee_server.dir/src/main.cpp.o	4d12a3dbe1f53134
+741	1789	1700109655524523757	golden_bee_server	c53624c52fea94fb
+0	5670	1700108664620782913	CMakeFiles/golden_bee_server.dir/src/main.cpp.o	4d12a3dbe1f53134
+1	741	1700109654476515735	CMakeFiles/golden_bee_server.dir/src/CSV_Data_Controller/CSV_Data_Controller.cpp.o	22c7a14032436b2
+2	7063	1700109292413731928	CMakeFiles/golden_bee_server.dir/src/Router/routes/Users_Routes.cpp.o	a09e3aeb2179b7dd
 0	6091	1700104209185821936	CMakeFiles/golden_bee_server.dir/src/Router/Router.cpp.o	5b9c5a6e3702f747
-928	6116	1700104209205821741	CMakeFiles/golden_bee_server.dir/src/HTTP_Status_Code/HTTP_Status_Code.cpp.o	a56af9c56a287de7
-6116	7942	1700104211041803943	CMakeFiles/golden_bee_server.dir/src/Router/util/convert_to_JSON.cpp.o	bf34f1ad40f83289
-5278	11912	1700104215001765968	CMakeFiles/golden_bee_server.dir/src/Router/routes/Collections_Routes.cpp.o	19ac15f9d65bbfc3
-5261	12038	1700104215129764751	CMakeFiles/golden_bee_server.dir/src/Router/routes/Items_Routes.cpp.o	5c9a8a5c13152118
-6091	12655	1700104215745758897	CMakeFiles/golden_bee_server.dir/src/Router/routes/Users_Routes.cpp.o	a09e3aeb2179b7dd
-12655	13599	1700104216693749914	golden_bee_server	c53624c52fea94fb
+2	5107	1700109290493717081	CMakeFiles/golden_bee_server.dir/src/HTTP_Status_Code/HTTP_Status_Code.cpp.o	a56af9c56a287de7
+0	19	1700142320213336419	build.ninja	be6275402fe3bab1
+1	5703	1700108664656783204	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
+1	6975	1700108665924793485	CMakeFiles/golden_bee_server.dir/src/Router/routes/Items_Routes.cpp.o	5c9a8a5c13152118
+5601	11463	1700108670416829886	CMakeFiles/golden_bee_server.dir/src/Router/routes/Collections_Routes.cpp.o	19ac15f9d65bbfc3
+6049	7845	1700107181921846120	CMakeFiles/golden_bee_server.dir/src/Router/util/convert_to_JSON.cpp.o	bf34f1ad40f83289
+1	6839	1700145629215627237	CMakeFiles/golden_bee_server.dir/src/Router/routes/Users_Routes.cpp.o	a09e3aeb2179b7dd
+6839	7942	1700145630323638216	golden_bee_server	c53624c52fea94fb

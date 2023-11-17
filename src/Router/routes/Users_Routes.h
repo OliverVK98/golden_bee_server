@@ -7,6 +7,7 @@
 
 #include "../Router.h"
 #include "../../CSV_Data_Controller/CSV_Data_Controller.h"
+#include "../../HTTP_Status_Code/HTTP_Status_Code.h"
 
 class UsersRoutes {
 public:

@@ -45,8 +45,7 @@ void ItemsRoutes::setup() {
             auto jsonData = convert_to_JSON(headers, item_data);
             res.set_content(jsonData.dump(), "application/json");
         } else {
-            HTTPStatusCode error(404, res);
+            send_response_with_HTTP_code(404, res);
         }
     });
-
 }

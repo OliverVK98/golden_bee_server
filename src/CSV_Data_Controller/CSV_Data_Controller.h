@@ -36,6 +36,7 @@ struct Collection : public BaseEntity {
 
 struct User : public BaseEntity {
     User() : BaseEntity() {};
+    User(std::string& email, std::string& password) : BaseEntity(), email(email), password(password) {};
     std::string email;
     std::string password;
 };

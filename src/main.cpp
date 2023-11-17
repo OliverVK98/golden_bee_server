@@ -1,6 +1,5 @@
 #include <iostream>
 #include "../lib/cpp-httplib/httplib.h"
-#include "./Logger/Logger.h"
 #include "Server_Config/Server_Config.h"
 
 httplib::Server svr;

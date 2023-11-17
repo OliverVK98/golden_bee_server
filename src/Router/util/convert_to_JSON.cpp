@@ -3,7 +3,6 @@
 //
 
 #include "convert_to_JSON.h"
-#include "../../Logger/Logger.h"
 
 template<>
 nlohmann::json convert_to_JSON<Item>(const std::vector<std::string>& headers, const std::vector<std::unique_ptr<Item>>& item_data) {

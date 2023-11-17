@@ -20,10 +20,6 @@ template <typename EntityType>
 std::vector<std::unique_ptr<EntityType>> CSV_Data_Controller<EntityType>::read_by_condition(const std::function<bool(const EntityType &)> &cond) {
     std::vector<std::unique_ptr<EntityType>> entities;
 
-    Logger console;
-    console.log("123");
-    console.log(this->getFilename());
-
     std::ifstream file(this->getFilename());
 
     if (!file.is_open()) {
@@ -154,6 +150,10 @@ void Users_CSV_Data_Controller::write(User &user) {
     if (!file.is_open()) {
         throw std::runtime_error("Could not open CSV file for writing.");
     }
+
+    Logger log;
+    log.log(user.email);
+    log.log(filename);
 
     ++currentUserId;
 
