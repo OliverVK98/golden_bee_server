@@ -14,31 +14,44 @@
 #include <mutex>
 #include <fstream>
 #include <string>
+#include <utility>
 
 struct BaseEntity {
-    BaseEntity() : id(0) {};
+    explicit BaseEntity(int id) : id(id) {};
     int id;
     virtual ~BaseEntity() = default;
 };
 
-struct Item : public BaseEntity {
-    Item() : BaseEntity(), price(0.0) {}
-    std::string name;
-    double price;
+struct AdditionalInfo {
+    AdditionalInfo(std::string url, std::string description)
+            : url(std::move(url)), description(std::move(description)) {}
+
+    std::string url;
     std::string description;
-    std::vector<int> collections;
 };
 
-struct Collection : public BaseEntity {
-    Collection() : BaseEntity() {};
+struct Item : public BaseEntity {
+    Item(int id, std::string  name, double price, double discountedPrice, int rating,
+         const std::vector<std::string>& imgUrl, const std::vector<std::string>& bundle,
+         const std::vector<AdditionalInfo>& additionalInfo, const std::vector<int>& type)
+            : BaseEntity(id),
+              name(std::move(name)), price(price), discountedPrice(discountedPrice),
+              rating(rating), imgUrl(imgUrl), bundle(bundle), additionalInfo(additionalInfo),
+              type(type) {}
+
     std::string name;
+    double price;
+    double discountedPrice;
+    int rating;
+    std::vector<std::string> imgUrl;
+    std::vector<std::string> bundle;
+    std::vector<AdditionalInfo> additionalInfo;
+    std::vector<int> type;
 };
 
 struct User : public BaseEntity {
-    User() : BaseEntity() {};
-    User(std::string& email, std::string& password) : BaseEntity(), email(email), password(password) {};
+    User(int id, std::string email) : BaseEntity(id), email(std::move(email)) {};
     std::string email;
-    std::string password;
 };
 
 template <typename EntityType>
@@ -88,18 +101,6 @@ public:
     std::vector<std::unique_ptr<Item>> read_by_collection_id(int id);
 };
 
-class Collections_CSV_Data_Controller : public CSV_Data_Controller<Collection> {
-private:
-    std::unique_ptr<Collection> parse_line(const std::string& line) override;
-    static std::string filename;
-    const std::string& getFilename() const override { return filename; }
-
-public:
-    explicit Collections_CSV_Data_Controller(std::string& fname) : CSV_Data_Controller<Collection>(fname) {};
-    std::vector<std::unique_ptr<Collection>> read() override;
-    std::vector<std::unique_ptr<Collection>> read_by_unique_id(int id) override;
-};
-
 class Users_CSV_Data_Controller : public CSV_Data_Controller<User> {
 private:
     std::shared_timed_mutex csv_mutex;
@@ -109,11 +110,11 @@ private:
     const std::string& getFilename() const override { return filename; }
 
 public:
-    explicit Users_CSV_Data_Controller(std::string& fname) : CSV_Data_Controller<User>(fname) {};
+    explicit Users_CSV_Data_Controller(std::string& fname);
     std::vector<std::unique_ptr<User>> read() override;
     std::vector<std::unique_ptr<User>> read_by_unique_id(int id) override;
     std::vector<std::unique_ptr<User>> read_by_unique_email(std::string email);
-    void write(User& user);
+    void write(const std::string& email);
 };
 
 #endif //UNTITLED_CSV_DATA_CONTROLLER_H

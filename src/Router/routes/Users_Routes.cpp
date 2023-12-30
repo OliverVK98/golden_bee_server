@@ -42,14 +42,14 @@ void UsersRoutes::setup() {
                 send_response_with_HTTP_code(400, "Email cannot be empty", res);
                 return;
             }
-            std::string password = json_body["password"];
             if (!isValidEmail(email)) {
                 send_response_with_HTTP_code(400, "Invalid email format", res);
                 return;
             }
 
-            User new_user(email, password);
-            data_source.write(new_user);
+            if(data_source.read_by_unique_email(email)[0]) {
+                send_response_with_HTTP_code(400, "This email already exists", res);
+            } else data_source.write(email);
 
         } catch (const std::exception& e) {
             res.status = 400;

@@ -13,7 +13,6 @@ add_executable(golden_bee_server
         src/HTTP_Status_Code/HTTP_Status_Code.cpp
         src/Router/Router.cpp
         src/Router/routes/Items_Routes.cpp
-        src/Router/routes/Collections_Routes.cpp
         src/Router/routes/Users_Routes.cpp
         src/Router/util/convert_to_JSON.cpp
 )

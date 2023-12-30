@@ -11,31 +11,39 @@ nlohmann::json convert_to_JSON<Item>(const std::vector<std::string>& headers, co
     for (auto &item : item_data) {
         nlohmann::json JSON_item;
 
+
         JSON_item[headers[0]] = item->id;
         JSON_item[headers[1]] = item->name;
         JSON_item[headers[2]] = item->price;
-        JSON_item[headers[3]] = item->description;
-        JSON_item[headers[4]] = item->collections;
+
+        if (item->discountedPrice == 0) { JSON_item[headers[3]] = nullptr; }
+        else { JSON_item[headers[3]] = item->discountedPrice; }
+
+        if (item->rating == 0) { JSON_item[headers[4]] = nullptr; }
+        else { JSON_item[headers[4]] = item->rating; }
+
+        JSON_item[headers[5]] = item->imgUrl;
+
+        if (item->bundle[0] == "NULL") { JSON_item[headers[6]] = nullptr; }
+        else { JSON_item[headers[6]] = item->bundle; }
+
+        if (item->additionalInfo[0].url == "NULL"  ) { JSON_item[headers[7]] = nullptr; }
+        else {
+            nlohmann::json additionalInfo_json;
+            for (const auto& info : item->additionalInfo) {
+                nlohmann::json info_json;
+                info_json["url"] = info.url;
+                info_json["description"] = info.description;
+                additionalInfo_json.push_back(info_json);
+            }
+            JSON_item[headers[7]] = additionalInfo_json;
+        }
+
+        JSON_item[headers[8]] = item->type;
 
         json_array.push_back(JSON_item);
     }
 
-
-    return json_array;
-}
-
-template<>
-nlohmann::json convert_to_JSON<Collection>(const std::vector<std::string>& headers, const std::vector<std::unique_ptr<Collection>>& collection_data) {
-    nlohmann::json json_array;
-
-    for (const auto& collection_ptr : collection_data) {
-        nlohmann::json json_collection;
-
-        json_collection[headers[0]] = collection_ptr->id;
-        json_collection[headers[1]] = collection_ptr->name;
-
-        json_array.push_back(json_collection);
-    }
 
     return json_array;
 }
@@ -49,44 +57,9 @@ nlohmann::json convert_to_JSON<User>(const std::vector<std::string>& headers, co
 
         json_user[headers[0]] = user_ptr->id;
         json_user[headers[1]] = user_ptr->email;
-        json_user[headers[2]] = user_ptr->password;
 
         json_array.push_back(json_user);
     }
 
     return json_array;
 }
-
-//nlohmann::json convert_to_JSON(const std::vector<std::string>& headers, const std::vector<std::unique_ptr<BaseEntity>>& item_data) {
-//    nlohmann::json jsonDataArray;
-//
-//    for (const auto& item_ptr : item_data) {
-//        if(auto item = dynamic_cast<Item*>(item_ptr.get())) {
-//            nlohmann::json JSON_object;
-//            JSON_object[headers[0]] = item->id;
-//            JSON_object[headers[1]] = item->name;
-//            JSON_object[headers[2]] = item->price;
-//            JSON_object[headers[3]] = item->description;
-//            JSON_object[headers[4]] = item->collections;
-//            jsonDataArray.push_back(JSON_object);
-//        }
-//        else if(auto collection = dynamic_cast<Collection*>(item_ptr.get())) {
-//            nlohmann::json JSON_object;
-//            JSON_object[headers[0]] = collection->id;
-//            JSON_object[headers[1]] = collection->name;
-//            jsonDataArray.push_back(JSON_object);
-//        }
-//        else if(auto collection = dynamic_cast<User*>(item_ptr.get())) {
-//            nlohmann::json JSON_object;
-//            JSON_object[headers[0]] = collection->id;
-//            JSON_object[headers[1]] = collection->email;
-//            JSON_object[headers[2]] = collection->password;
-//            jsonDataArray.push_back(JSON_object);
-//        }
-//        else {
-//            throw std::runtime_error("Incorrect payload");
-//        }
-//    }
-//
-//    return jsonDataArray;
-//}

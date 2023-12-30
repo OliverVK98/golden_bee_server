@@ -11,8 +11,13 @@ std::unordered_map<std::string, int> ItemsRoutes::collection_name_to_id_map = {
         {"rings", 2},
         {"bracelets", 3},
         {"earrings", 4},
-        {"gift Cards", 5},
-        {"bundles", 6},
+        {"bundles", 5},
+        {"gift_cards", 6},
+        {"sunflowers", 7},
+        {"daisies", 8},
+        {"bees", 9},
+        {"bracelets_with_notes", 10},
+        {"accessories", 11},
 };
 
 std::string ItemsRoutes::items_path = "/items";

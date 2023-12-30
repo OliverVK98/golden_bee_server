@@ -14,7 +14,6 @@ bool contains_id(const std::vector<int>& vec, int value) {
 
 std::string Items_CSV_Data_Controller::filename = "items.csv";
 std::string Users_CSV_Data_Controller::filename = "users.csv";
-std::string Collections_CSV_Data_Controller::filename = "collections.csv";
 
 template <typename EntityType>
 std::vector<std::unique_ptr<EntityType>> CSV_Data_Controller<EntityType>::read_by_condition(const std::function<bool(const EntityType &)> &cond) {
@@ -49,65 +48,148 @@ std::vector<std::unique_ptr<Item>> Items_CSV_Data_Controller::read_by_unique_id(
 }
 
 std::vector<std::unique_ptr<Item>> Items_CSV_Data_Controller::read_by_collection_id(int id) {
-    return read_by_condition([&](const Item& item) { return contains_id(item.collections, id); });
+    return read_by_condition([&](const Item& item) { return contains_id(item.type, id); });
 }
 
 std::unique_ptr<Item> Items_CSV_Data_Controller::parse_line(const std::string &line) {
     std::stringstream ss(line);
     std::string value;
-    auto item = std::make_unique<Item>();
+    // Item vars initializers
+    int id;
+    std::string name;
+    double price;
+    double discountedPrice;
+    int rating;
+    std::vector<std::string> imgUrl;
+    std::vector<std::string> bundle;
+    std::vector<AdditionalInfo> additional_info;
+    std::vector<int> type;
+
 
     if (std::getline(ss, value, ',')) {
-        item->id = std::stoi(value);
+        id = std::stoi(value);
     }
     if (std::getline(ss, value, ',')) {
-        item->name = value;
+        name = value;
     }
     if (std::getline(ss, value, ',')) {
-        item->price = std::stod(value);
+        price = std::stod(value);
     }
     if (std::getline(ss, value, ',')) {
-        item->description = value;
+        if(value.empty()) { discountedPrice = 0; }
+        else {
+            discountedPrice = std::stod(value);
+        }
     }
-    std::string collections_str;
-    std::getline(ss, collections_str, '\0');
-    std::stringstream collections_ss(collections_str);
-    std::string collection;
+    if (std::getline(ss, value, ',')) {
+        if(value.empty()) { rating = 0; }
+        else {
+            rating = std::stoi(value);
+        }
+    }
 
-    while (std::getline(collections_ss, collection, ',')) {
-        collection.erase(std::remove(collection.begin(), collection.end(), '\"'), collection.end());
-        item->collections.push_back(std::stoi(collection));
+    if (std::getline(ss, value, ',')) {
+        std::istringstream urlArr(value);
+        std::string singleUrl;
+
+        while (std::getline(urlArr, singleUrl, '|')) {
+            imgUrl.push_back(singleUrl);
+        }
     }
+
+    if (std::getline(ss, value, ',')) {
+        std::istringstream url_arr(value);
+        if (value.empty()) { bundle.emplace_back("NULL"); }
+        else {
+        std::string bundleItems;
+        while (std::getline(url_arr, bundleItems, '|')) {
+            bundle.push_back(bundleItems);
+        }
+        }
+    }
+
+    if (std::getline(ss, value, ',')) {
+
+        if (!value.empty() && value.front() == '\"') {
+
+            std::string restOfField;
+            char ch;
+            while (ss.get(ch)) {
+                if (ch == '\"') {
+                    if (ss.peek() == '\"') {
+                        ss.get(ch);
+                    } else {
+                        break;
+                    }
+                } else {
+                    restOfField += ch;
+                }
+            }
+            value.erase(0, 1);
+            value += restOfField;
+            ss.ignore(std::numeric_limits<std::streamsize>::max(), ',');
+        }
+
+        if (!value.empty()) {
+            std::istringstream add_inf_arr(value);
+            std::string add_inf_line;
+            while (std::getline(add_inf_arr, add_inf_line, '|')) {
+                std::istringstream add_inf_line_stream(add_inf_line);
+                std::string add_inf_url;
+                std::string add_inf_desc;
+
+                if (std::getline(add_inf_line_stream, add_inf_url, '^') &&
+                    std::getline(add_inf_line_stream, add_inf_desc)) {
+                    additional_info.emplace_back(add_inf_url, add_inf_desc);
+                }
+            }
+        } else {
+            additional_info.emplace_back("NULL", "NULL");
+        }
+    }
+
+    if (std::getline(ss, value, ',')) {
+        std::istringstream type_arr(value);
+        std::string type_item;
+
+        while (std::getline(type_arr, type_item, '|')) {
+            type.push_back(std::stoi(type_item));
+        }
+    }
+
+
+    auto item = std::make_unique<Item>(id, name, price, discountedPrice, rating, imgUrl, bundle, additional_info, type);
+
     return item;
 }
 
-// Collections_CSV_Data_Controller
-
-std::unique_ptr<Collection> Collections_CSV_Data_Controller::parse_line(const std::string &line) {
-    std::stringstream ss(line);
-    std::string value;
-    auto collection = std::make_unique<Collection>();
-
-    if (std::getline(ss, value, ',')) {
-        collection->id = std::stoi(value);
-    }
-    if (std::getline(ss, value, ',')) {
-        collection->name = value;
-    }
-
-    return collection;
-}
-
-std::vector<std::unique_ptr<Collection>> Collections_CSV_Data_Controller::read() {
-    return read_by_condition([](const Collection& collection) { return true; });
-}
-
-std::vector<std::unique_ptr<Collection>> Collections_CSV_Data_Controller::read_by_unique_id(int id) {
-    return read_by_condition([&](const Collection& collection) { return collection.id == id; });
-}
-
 // Users_CSV_Data_Controller
-int Users_CSV_Data_Controller::currentUserId = 1;
+int Users_CSV_Data_Controller::currentUserId = -1;
+
+Users_CSV_Data_Controller::Users_CSV_Data_Controller(std::string &fname) : CSV_Data_Controller(fname) {
+    std::ifstream file(this->getFilename());
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open CSV file.");
+    }
+
+    std::string line;
+    std::string lastLine;
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        lastLine = line;
+    }
+
+    if (!lastLine.empty()) {
+        size_t pos = lastLine.find(',');
+        if (pos != std::string::npos) {
+            currentUserId = std::stoi(lastLine.substr(0, pos));
+        }
+    } else {
+        currentUserId = 0;  // Default value if the file is empty
+    }
+
+    file.close();
+}
 
 std::vector<std::unique_ptr<User>> Users_CSV_Data_Controller::read() {
     std::shared_lock<std::shared_timed_mutex> lock(csv_mutex);
@@ -127,22 +209,22 @@ std::vector<std::unique_ptr<User>> Users_CSV_Data_Controller::read_by_unique_ema
 std::unique_ptr<User> Users_CSV_Data_Controller::parse_line(const std::string &line) {
     std::stringstream ss(line);
     std::string value;
-    auto user = std::make_unique<User>();
+    std::string email;
+    int id;
 
     if (std::getline(ss, value, ',')) {
-        user->id = std::stoi(value);
+        id = std::stoi(value);
     }
     if (std::getline(ss, value, ',')) {
-        user->email = value;
+        email = value;
     }
-    if (std::getline(ss, value, ',')) {
-        user->password = value;
-    }
+
+    auto user = std::make_unique<User>(id, email);
 
     return user;
 }
 
-void Users_CSV_Data_Controller::write(User &user) {
+void Users_CSV_Data_Controller::write(const std::string& email) {
     std::unique_lock<std::shared_timed_mutex> lock(csv_mutex);
 
     std::ofstream file(filename, std::ios::app);
@@ -151,15 +233,13 @@ void Users_CSV_Data_Controller::write(User &user) {
         throw std::runtime_error("Could not open CSV file for writing.");
     }
 
-    Logger log;
-    log.log(user.email);
-    log.log(filename);
-
     ++currentUserId;
 
-    file << currentUserId << "," << user.email << "," << user.password << std::endl;
+    file << currentUserId << "," << email  << std::endl;
 
     file.close();
 }
+
+
 
 

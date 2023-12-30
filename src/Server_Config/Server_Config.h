@@ -8,7 +8,6 @@
 #include "../../lib/cpp-httplib/httplib.h"
 #include "../Router/Router.h"
 #include "../Router/routes/Items_Routes.h"
-#include "../Router/routes/Collections_Routes.h"
 #include "../Router/routes/Users_Routes.h"
 
 class ServerConfig {
@@ -19,7 +18,6 @@ private:
     httplib::Server& svr;
     Router router;
     ItemsRoutes itemsRoutes;
-    CollectionsRoutes collectionsRoutes;
     UsersRoutes usersRoutes;
 };
 

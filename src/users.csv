@@ -1,6 +1,2 @@
-id,e-mail,password
-2,test@gmail.com,123
-2,test@gmail.com,123
-3,test@gmail.com,123
-4,test@gmail.com,123
-5,test@gmail.com,123
+id,e-mail
+1,test@gmail.com
