@@ -31,7 +31,12 @@ void ItemsRoutes::setup() {
         if (req.has_param("collection")) {
             std::string collectionName = req.get_param_value("collection");
             for (auto& c: collectionName) c = tolower(c);
-            item_data = data_source.read_by_collection_id(collection_name_to_id_map[collectionName]);
+
+            if(collectionName == "all") {
+                item_data = data_source.read();
+            } else {
+                item_data = data_source.read_by_collection_id(collection_name_to_id_map[collectionName]);
+            }
         } else {
             item_data = data_source.read();
         }
@@ -39,6 +44,17 @@ void ItemsRoutes::setup() {
         auto jsonData = convert_to_JSON(headers, item_data);
 
         res.set_content(jsonData.dump(), "application/json");
+    });
+
+    router.Get(items_path + "/trending", [this, headers](const httplib::Request& req, httplib::Response& res) {
+        auto item_data = data_source.get_random_items(4);
+
+        if (!item_data.empty()) {
+            auto jsonData = convert_to_JSON(headers, item_data);
+            res.set_content(jsonData.dump(), "application/json");
+        } else {
+            send_response_with_HTTP_code(404, res);
+        }
     });
 
     router.Get(items_path + "/([0-9]+)", [this, headers](const httplib::Request& req, httplib::Response& res) {

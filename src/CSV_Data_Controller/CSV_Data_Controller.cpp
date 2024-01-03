@@ -7,6 +7,7 @@
 #include "CSV_Data_Controller.h"
 #include <algorithm>
 #include <shared_mutex>
+#include <random>
 
 bool contains_id(const std::vector<int>& vec, int value) {
     return std::find(vec.begin(), vec.end(), value) != vec.end();
@@ -161,6 +162,22 @@ std::unique_ptr<Item> Items_CSV_Data_Controller::parse_line(const std::string &l
     auto item = std::make_unique<Item>(id, name, price, discountedPrice, rating, imgUrl, bundle, additional_info, type);
 
     return item;
+}
+
+std::vector<std::unique_ptr<Item>> Items_CSV_Data_Controller::get_random_items(int quant) {
+    std::vector<int> random_ids;
+    random_ids.reserve(quant);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distrib(1, 64);
+
+    for (int i = 0; i < quant; ++i) {
+        random_ids.push_back(distrib(gen));
+    }
+
+    return read_by_condition([&](const Item& item) {
+        return std::find(random_ids.begin(), random_ids.end(), item.id) != random_ids.end();
+    });
 }
 
 // Users_CSV_Data_Controller

@@ -13,12 +13,14 @@ class Router {
 private:
     httplib::Server& svr;
     std::string prefix = "/api";
+    static void set_cors_headers(httplib::Response &res);
 
 public:
     explicit Router(httplib::Server& server) : svr(server) {};
     void Get(const std::string& route, const httplib::Server::Handler& handler);
     void Post(const std::string& route, const httplib::Server::Handler& handler);
     void Put(const std::string& route, const httplib::Server::Handler& handler);
+    void Options(const std::string& route, const httplib::Server::Handler& handler);
 };
 
 #endif //UNTITLED_ROUTER_H

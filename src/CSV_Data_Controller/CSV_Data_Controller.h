@@ -99,6 +99,7 @@ public:
     std::vector<std::unique_ptr<Item>> read() override;
     std::vector<std::unique_ptr<Item>> read_by_unique_id(int id) override;
     std::vector<std::unique_ptr<Item>> read_by_collection_id(int id);
+    std::vector<std::unique_ptr<Item>> get_random_items(int quant);
 };
 
 class Users_CSV_Data_Controller : public CSV_Data_Controller<User> {
