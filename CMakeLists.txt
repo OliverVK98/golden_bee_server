@@ -15,6 +15,8 @@ add_executable(golden_bee_server
         src/Router/routes/Items_Routes.cpp
         src/Router/routes/Users_Routes.cpp
         src/Router/util/convert_to_JSON.cpp
+        src/Router/routes/OrdersRoutes.cpp
+        src/Router/routes/OrdersRoutes.h
 )
 
 target_link_libraries(golden_bee_server)

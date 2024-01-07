@@ -58,7 +58,12 @@ void ItemsRoutes::setup() {
     });
 
     router.Get(items_path + "/([0-9]+)", [this, headers](const httplib::Request& req, httplib::Response& res) {
-        int param = std::stoi(req.matches[1]);
+        int param;
+        try {
+            param = std::stoi(req.matches[1]);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << e.what() << "7" << '\n';
+        }
 
         auto item_data = data_source.read_by_unique_id(param);
 

@@ -3,15 +3,19 @@
 //
 
 #include "Server_Config.h"
+#include "../Logger/Logger.h"
 
 ServerConfig::ServerConfig(httplib::Server& server)
         : svr(server),
           router(server),
-          itemsRoutes(router),
-          usersRoutes(router) {
+          items_routes(router),
+          users_routes(router),
+          orders_routes(router) {
 
-    itemsRoutes.setup();
-    usersRoutes.setup();
+    Logger console;
+    items_routes.setup();
+    users_routes.setup();
+    orders_routes.setup();
 }
 
 void ServerConfig::listen() {

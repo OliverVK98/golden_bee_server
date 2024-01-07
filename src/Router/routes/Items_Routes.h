@@ -11,8 +11,8 @@
 
 class ItemsRoutes {
 public:
-    explicit ItemsRoutes(Router& rtr): router(rtr), data_source(filename) {};
     void setup();
+    explicit ItemsRoutes(Router& rtr): router(rtr), data_source(filename) {};
 
 private:
     std::string filename = "items.csv";

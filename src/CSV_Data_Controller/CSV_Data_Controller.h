@@ -5,16 +5,14 @@
 #ifndef UNTITLED_CSV_DATA_CONTROLLER_H
 #define UNTITLED_CSV_DATA_CONTROLLER_H
 
-#include <iostream>
 #include <memory>
 #include <functional>
 #include "vector"
-#include "../Logger/Logger.h"
 #include <shared_mutex>
 #include <mutex>
-#include <fstream>
 #include <string>
 #include <utility>
+#include <fstream>
 
 struct BaseEntity {
     explicit BaseEntity(int id) : id(id) {};
@@ -54,6 +52,41 @@ struct User : public BaseEntity {
     std::string email;
 };
 
+struct Address {
+    Address(std::string  addr, std::string  ct, std::string  st, std::string zip, std::string phone_num)
+            : address(std::move(addr)), city(std::move(ct)), state(std::move(st)), zip_code(zip),
+            phone(std::make_unique<std::string>(phone_num)) {}
+
+    Address(std::string  addr, std::string  ct, std::string  st, std::string zip)
+            : address(std::move(addr)), city(std::move(ct)), state(std::move(st)),
+            zip_code(zip), phone(nullptr) {}
+
+    std::string address;
+    std::string city;
+    std::string state;
+    std::string zip_code;
+    std::unique_ptr<std::string> phone;
+};
+
+struct Order : public BaseEntity {
+public:
+    Order(int id, std::string &email, std::string &fn, std::string &ln, std::string &order_info,
+            std::unique_ptr<Address> con_ship_info, std::unique_ptr<Address> bill_info) :
+            BaseEntity(id), email(email), first_name(fn), last_name(ln), order_info(order_info),
+            contact_shipping_info(std::move(con_ship_info)), billing_info(std::move(bill_info)) {}
+
+    Order(int id, std::string &email, std::string &fn, std::string &ln, std::string &order_info,
+            std::unique_ptr<Address> con_ship_info) : BaseEntity(id), email(email), first_name(fn), last_name(ln),
+            order_info(order_info), contact_shipping_info(std::move(con_ship_info)), billing_info(nullptr) {}
+
+    std::string first_name;
+    std::string last_name;
+    std::string email;
+    std::string order_info;
+    std::unique_ptr<Address> contact_shipping_info;
+    std::unique_ptr<Address> billing_info;
+};
+
 template <typename EntityType>
 class CSV_Data_Controller {
 public:
@@ -70,21 +103,21 @@ protected:
 
     explicit CSV_Data_Controller(std::string& fname) {
 
-        std::ifstream file(fname);
+        std::ifstream csv_file(fname);
 
-        if (!file.is_open()) {
+        if (!csv_file.is_open()) {
             throw std::runtime_error("Could not open CSV file.");
         }
 
         std::string line;
-        if (std::getline(file, line) && !line.empty()) {
+        if (std::getline(csv_file, line) && !line.empty()) {
             std::stringstream headerStream(line);
             std::string headerItem;
             while (std::getline(headerStream, headerItem, ',')) {
                 headers.push_back(headerItem);
             }
         }
-        file.close();
+        csv_file.close();
     }
 };
 
@@ -116,6 +149,21 @@ public:
     std::vector<std::unique_ptr<User>> read_by_unique_id(int id) override;
     std::vector<std::unique_ptr<User>> read_by_unique_email(std::string email);
     void write(const std::string& email);
+};
+
+class Orders_CSV_Data_Controller : public CSV_Data_Controller<Order> {
+private:
+    std::shared_timed_mutex csv_mutex;
+    static int currentOrderId;
+    static std::string filename;
+    const std::string& getFilename() const override { return filename; }
+    std::unique_ptr<Order> parse_line(const std::string& line) override;
+    std::vector<std::unique_ptr<Order>> read() override;
+    std::vector<std::unique_ptr<Order>> read_by_unique_id(int id) override;
+
+public:
+    explicit Orders_CSV_Data_Controller(std::string& fname);
+    void write(const Order &order, bool &send_offers, bool &shipping_billing_is_same);
 };
 
 #endif //UNTITLED_CSV_DATA_CONTROLLER_H

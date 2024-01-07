@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <shared_mutex>
 #include <random>
+#include <iostream>
 
 bool contains_id(const std::vector<int>& vec, int value) {
     return std::find(vec.begin(), vec.end(), value) != vec.end();
@@ -15,6 +16,7 @@ bool contains_id(const std::vector<int>& vec, int value) {
 
 std::string Items_CSV_Data_Controller::filename = "items.csv";
 std::string Users_CSV_Data_Controller::filename = "users.csv";
+std::string Orders_CSV_Data_Controller::filename = "orders.csv";
 
 template <typename EntityType>
 std::vector<std::unique_ptr<EntityType>> CSV_Data_Controller<EntityType>::read_by_condition(const std::function<bool(const EntityType &)> &cond) {
@@ -66,9 +68,12 @@ std::unique_ptr<Item> Items_CSV_Data_Controller::parse_line(const std::string &l
     std::vector<AdditionalInfo> additional_info;
     std::vector<int> type;
 
-
     if (std::getline(ss, value, ',')) {
-        id = std::stoi(value);
+        try {
+            id = std::stoi(value);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << e.what() << "1" << '\n';
+        }
     }
     if (std::getline(ss, value, ',')) {
         name = value;
@@ -85,7 +90,12 @@ std::unique_ptr<Item> Items_CSV_Data_Controller::parse_line(const std::string &l
     if (std::getline(ss, value, ',')) {
         if(value.empty()) { rating = 0; }
         else {
-            rating = std::stoi(value);
+            try {
+                rating = std::stoi(value);
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument: " << e.what() << "2" << '\n';
+            }
+
         }
     }
 
@@ -154,7 +164,11 @@ std::unique_ptr<Item> Items_CSV_Data_Controller::parse_line(const std::string &l
         std::string type_item;
 
         while (std::getline(type_arr, type_item, '|')) {
-            type.push_back(std::stoi(type_item));
+            try {
+                type.push_back(std::stoi(type_item));
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument: " << e.what() << "3" << '\n';
+            }
         }
     }
 
@@ -199,7 +213,11 @@ Users_CSV_Data_Controller::Users_CSV_Data_Controller(std::string &fname) : CSV_D
     if (!lastLine.empty()) {
         size_t pos = lastLine.find(',');
         if (pos != std::string::npos) {
-            currentUserId = std::stoi(lastLine.substr(0, pos));
+            try {
+                currentUserId = std::stoi(lastLine.substr(0, pos));
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument: " << e.what() << "4" << '\n';
+            }
         }
     } else {
         currentUserId = 0;  // Default value if the file is empty
@@ -230,7 +248,11 @@ std::unique_ptr<User> Users_CSV_Data_Controller::parse_line(const std::string &l
     int id;
 
     if (std::getline(ss, value, ',')) {
-        id = std::stoi(value);
+        try {
+            id = std::stoi(value);
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Invalid argument: " << e.what() << "5" << '\n';
+        }
     }
     if (std::getline(ss, value, ',')) {
         email = value;
@@ -257,6 +279,92 @@ void Users_CSV_Data_Controller::write(const std::string& email) {
     file.close();
 }
 
+// Orders_CSV_Data_Controller
+int Orders_CSV_Data_Controller::currentOrderId = -1;
 
+Orders_CSV_Data_Controller::Orders_CSV_Data_Controller(std::string &fname) : CSV_Data_Controller(fname) {
+    std::ifstream file(this->getFilename());
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open CSV file.");
+    }
+
+    std::string line;
+    std::string lastLine;
+    std::getline(file, line);
+    while (std::getline(file, line)) {
+        lastLine = line;
+    }
+
+    if (!lastLine.empty()) {
+        size_t pos = lastLine.find(',');
+        if (pos != std::string::npos) {
+            try {
+                currentOrderId = std::stoi(lastLine.substr(0, pos));
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument: '" << lastLine.substr(0, pos) << "' - Error: " << e.what() << '\n';
+            }
+        }
+    } else {
+        currentOrderId = 0;  // Default value if the file is empty
+    }
+
+    file.close();
+}
+
+void Orders_CSV_Data_Controller::write(const Order &order, bool &send_offers, bool &shipping_billing_is_same) {
+    std::unique_lock<std::shared_timed_mutex> lock(csv_mutex);
+
+    std::ofstream file(filename, std::ios::app);
+
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open CSV file for writing.");
+    }
+
+    ++currentOrderId;
+
+    std::string address_line = "\"" + order.contact_shipping_info->address + "|" +
+                               order.contact_shipping_info->city + "|" +
+                               order.contact_shipping_info->state + "|" +
+                               order.contact_shipping_info->zip_code;
+
+    if (order.contact_shipping_info->phone != nullptr) {
+        address_line += "|" + *order.contact_shipping_info->phone;
+    }
+
+    address_line += "\"";
+
+    if(shipping_billing_is_same) {
+        file << currentOrderId << "," << order.first_name << "," << order.last_name << "," << order.email
+                << "," << address_line << "," << order.order_info << std::endl;
+    } else {
+        std::string bill_address_line = "\"" + order.billing_info->address + "|" +
+                                   order.billing_info->city + "|" +
+                                   order.billing_info->state + "|" +
+                                   order.billing_info->zip_code;
+
+        if (order.billing_info->phone != nullptr) {
+            bill_address_line += "|" + *order.billing_info->phone;
+        }
+
+        bill_address_line += "\"";
+
+        file << currentOrderId << "," << order.first_name << "," << order.last_name << "," << order.email
+             << "," << address_line << "," << order.order_info << "," << bill_address_line << std::endl;
+    }
+
+    file.close();
+}
+
+std::unique_ptr<Order> Orders_CSV_Data_Controller::parse_line(const std::string &line) {
+    return {};
+}
+
+std::vector<std::unique_ptr<Order>> Orders_CSV_Data_Controller::read() {
+    return {};
+}
+
+std::vector<std::unique_ptr<Order>> Orders_CSV_Data_Controller::read_by_unique_id(int id) {
+    return {};
+}
 
 
