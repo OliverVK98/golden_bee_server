@@ -122,6 +122,7 @@ build CMakeFiles/golden_bee_server.dir/src/Router/routes/OrdersRoutes.cpp.o: CXX
 
 build golden_bee_server: CXX_EXECUTABLE_LINKER__golden_bee_server_Debug CMakeFiles/golden_bee_server.dir/src/main.cpp.o CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o CMakeFiles/golden_bee_server.dir/src/CSV_Data_Controller/CSV_Data_Controller.cpp.o CMakeFiles/golden_bee_server.dir/src/HTTP_Status_Code/HTTP_Status_Code.cpp.o CMakeFiles/golden_bee_server.dir/src/Router/Router.cpp.o CMakeFiles/golden_bee_server.dir/src/Router/routes/Items_Routes.cpp.o CMakeFiles/golden_bee_server.dir/src/Router/routes/Users_Routes.cpp.o CMakeFiles/golden_bee_server.dir/src/Router/util/convert_to_JSON.cpp.o CMakeFiles/golden_bee_server.dir/src/Router/routes/OrdersRoutes.cpp.o
   FLAGS = -g
+  LINK_LIBRARIES = -lpthread
   OBJECT_DIR = CMakeFiles/golden_bee_server.dir
   POST_BUILD = :
   PRE_LINK = :

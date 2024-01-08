@@ -19,4 +19,4 @@ add_executable(golden_bee_server
         src/Router/routes/OrdersRoutes.h
 )
 
-target_link_libraries(golden_bee_server)
+target_link_libraries(golden_bee_server pthread)
