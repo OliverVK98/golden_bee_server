@@ -1,21 +1,13 @@
 # ninja log v5
-5454	6564	1704694258312359947	golden_bee_server	204d53d7ac92c29a
-1	6811	1704606810691824597	CMakeFiles/golden_bee_server.dir/src/main.cpp.o	4d12a3dbe1f53134
+1	1100	1704778828625071786	golden_bee_server	716a6fb6aed35942
+1	6452	1704778488385063435	CMakeFiles/golden_bee_server.dir/src/main.cpp.o	4d12a3dbe1f53134
 1	1125	1704607186962311038	CMakeFiles/golden_bee_server.dir/src/CSV_Data_Controller/CSV_Data_Controller.cpp.o	22c7a14032436b2
 6812	13459	1704606817331868777	CMakeFiles/golden_bee_server.dir/src/Router/routes/OrdersRoutes.cpp.o	b81eb11c45fe3630
 1372	8601	1704606812479836493	CMakeFiles/golden_bee_server.dir/src/Router/routes/Users_Routes.cpp.o	a09e3aeb2179b7dd
 1	5400	1704175550539412629	CMakeFiles/golden_bee_server.dir/src/Router/Router.cpp.o	5b9c5a6e3702f747
 0	6208	1703911501272435144	CMakeFiles/golden_bee_server.dir/src/HTTP_Status_Code/HTTP_Status_Code.cpp.o	a56af9c56a287de7
-2	40	1704723168142144959	build.ninja	7da22ebfe1308686
-1	5454	1704694257204351954	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
+0	102	1705277931664765787	build.ninja	7da22ebfe1308686
+1	6116	1704778488045063427	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
 2	7076	1704606810955826354	CMakeFiles/golden_bee_server.dir/src/Router/routes/Items_Routes.cpp.o	5c9a8a5c13152118
 1073	7553	1703827233645756011	CMakeFiles/golden_bee_server.dir/src/Router/routes/Collections_Routes.cpp.o	19ac15f9d65bbfc3
 6663	8551	1704606812439836227	CMakeFiles/golden_bee_server.dir/src/Router/util/convert_to_JSON.cpp.o	bf34f1ad40f83289
-1	6255	1704728344470480099	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
-6255	7472	1704728345690441453	golden_bee_server	204d53d7ac92c29a
-2	5695	1704728358758037087	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
-5695	6853	1704728359914002148	golden_bee_server	204d53d7ac92c29a
-2	5718	1704728373389604723	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
-5718	6821	1704728374493572959	golden_bee_server	204d53d7ac92c29a
-3	5746	1704728401592829906	CMakeFiles/golden_bee_server.dir/src/Server_Config/Server_Config.cpp.o	cfbf0003e9ff900a
-5746	6864	1704728402712800683	golden_bee_server	204d53d7ac92c29a

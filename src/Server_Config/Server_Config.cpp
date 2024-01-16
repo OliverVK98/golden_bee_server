@@ -19,5 +19,5 @@ ServerConfig::ServerConfig(httplib::Server& server)
 }
 
 void ServerConfig::listen() {
-    svr.listen("0.0.0.0", 8080);
+    svr.listen("0.0.0.0", 80);
 }

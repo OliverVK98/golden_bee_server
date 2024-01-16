@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(/usr/include/nlohmann)
 include_directories(${CMAKE_SOURCE_DIR}/lib/cpp-httplib)
+find_package(OpenSSL REQUIRED)
 
 add_executable(golden_bee_server
         src/main.cpp
@@ -19,4 +20,4 @@ add_executable(golden_bee_server
         src/Router/routes/OrdersRoutes.h
 )
 
-target_link_libraries(golden_bee_server pthread)
+target_link_libraries(golden_bee_server pthread OpenSSL::SSL OpenSSL::Crypto)
