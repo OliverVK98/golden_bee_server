@@ -5,6 +5,7 @@
 #ifndef UNTITLED_SERVER_CONFIG_H
 #define UNTITLED_SERVER_CONFIG_H
 
+#define CPPHTTPLIB_OPENSSL_SUPPORT
 #include "../../lib/cpp-httplib/httplib.h"
 #include "../Router/Router.h"
 #include "../Router/routes/Items_Routes.h"
@@ -13,7 +14,7 @@
 
 class ServerConfig {
 public:
-    explicit ServerConfig(httplib::Server& server);
+    explicit ServerConfig(httplib::SSLServer& server);
     void listen();
 private:
     httplib::Server& svr;
