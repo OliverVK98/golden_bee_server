@@ -19,16 +19,16 @@ Simple examples
 #include "path/to/httplib.h"
 
 // HTTP
-httplib::Server svr;
+httplib::Server srv;
 
 // HTTPS
-httplib::SSLServer svr;
+httplib::SSLServer srv;
 
-svr.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
+srv.Get("/hi", [](const httplib::Request &, httplib::Response &res) {
   res.set_content("Hello World!", "text/plain");
 });
 
-svr.listen("0.0.0.0", 8080);
+srv.listen("0.0.0.0", 8080);
 ```
 
 #### Client
@@ -62,7 +62,7 @@ NOTE for macOS: cpp-httplib now can use system certs with `CPPHTTPLIB_USE_CERTS_
 #include "path/to/httplib.h"
 
 // Server
-httplib::SSLServer svr("./cert.pem", "./key.pem");
+httplib::SSLServer srv("./cert.pem", "./key.pem");
 
 // Client
 httplib::Client cli("https://localhost:1234"); // scheme + host
@@ -88,27 +88,27 @@ int main(void)
 {
   using namespace httplib;
 
-  Server svr;
+  Server srv;
 
-  svr.Get("/hi", [](const Request& req, Response& res) {
+  srv.Get("/hi", [](const Request& req, Response& res) {
     res.set_content("Hello World!", "text/plain");
   });
 
   // Match the request path against a regular expression
   // and extract its captures
-  svr.Get(R"(/numbers/(\d+))", [&](const Request& req, Response& res) {
+  srv.Get(R"(/numbers/(\d+))", [&](const Request& req, Response& res) {
     auto numbers = req.matches[1];
     res.set_content(numbers, "text/plain");
   });
 
   // Capture the second segment of the request path as "id" path param
-  svr.Get("/users/:id", [&](const Request& req, Response& res) {
+  srv.Get("/users/:id", [&](const Request& req, Response& res) {
     auto user_id = req.path_params.at("id");
     res.set_content(user_id, "text/plain");
   });
 
   // Extract values from HTTP headers and URL query params
-  svr.Get("/body-header-param", [](const Request& req, Response& res) {
+  srv.Get("/body-header-param", [](const Request& req, Response& res) {
     if (req.has_header("Content-Length")) {
       auto val = req.get_header_value("Content-Length");
     }
@@ -118,11 +118,11 @@ int main(void)
     res.set_content(req.body, "text/plain");
   });
 
-  svr.Get("/stop", [&](const Request& req, Response& res) {
-    svr.stop();
+  srv.Get("/stop", [&](const Request& req, Response& res) {
+    srv.stop();
   });
 
-  svr.listen("localhost", 1234);
+  srv.listen("localhost", 1234);
 }
 ```
 
@@ -131,38 +131,38 @@ int main(void)
 ### Bind a socket to multiple interfaces and any available port
 
 ```cpp
-int port = svr.bind_to_any_port("0.0.0.0");
-svr.listen_after_bind();
+int port = srv.bind_to_any_port("0.0.0.0");
+srv.listen_after_bind();
 ```
 
 ### Static File Server
 
 ```cpp
 // Mount / to ./www directory
-auto ret = svr.set_mount_point("/", "./www");
+auto ret = srv.set_mount_point("/", "./www");
 if (!ret) {
   // The specified base directory doesn't exist...
 }
 
 // Mount /public to ./www directory
-ret = svr.set_mount_point("/public", "./www");
+ret = srv.set_mount_point("/public", "./www");
 
 // Mount /public to ./www1 and ./www2 directories
-ret = svr.set_mount_point("/public", "./www1"); // 1st order to search
-ret = svr.set_mount_point("/public", "./www2"); // 2nd order to search
+ret = srv.set_mount_point("/public", "./www1"); // 1st order to search
+ret = srv.set_mount_point("/public", "./www2"); // 2nd order to search
 
 // Remove mount /
-ret = svr.remove_mount_point("/");
+ret = srv.remove_mount_point("/");
 
 // Remove mount /public
-ret = svr.remove_mount_point("/public");
+ret = srv.remove_mount_point("/public");
 ```
 
 ```cpp
 // User defined file extension and MIME type mappings
-svr.set_file_extension_and_mimetype_mapping("cc", "text/x-c");
-svr.set_file_extension_and_mimetype_mapping("cpp", "text/x-c");
-svr.set_file_extension_and_mimetype_mapping("hh", "text/x-h");
+srv.set_file_extension_and_mimetype_mapping("cc", "text/x-c");
+srv.set_file_extension_and_mimetype_mapping("cpp", "text/x-c");
+srv.set_file_extension_and_mimetype_mapping("hh", "text/x-h");
 ```
 
 The followings are built-in mappings:
@@ -196,7 +196,7 @@ NOTE: These static file server methods are not thread-safe.
 
 ```cpp
 // The handler is called right before the response is sent to a client
-svr.set_file_request_handler([](const Request &req, Response &res) {
+srv.set_file_request_handler([](const Request &req, Response &res) {
   ...
 });
 ```
@@ -204,7 +204,7 @@ svr.set_file_request_handler([](const Request &req, Response &res) {
 ### Logging
 
 ```cpp
-svr.set_logger([](const auto& req, const auto& res) {
+srv.set_logger([](const auto& req, const auto& res) {
   your_logger(req, res);
 });
 ```
@@ -212,7 +212,7 @@ svr.set_logger([](const auto& req, const auto& res) {
 ### Error handler
 
 ```cpp
-svr.set_error_handler([](const auto& req, auto& res) {
+srv.set_error_handler([](const auto& req, auto& res) {
   auto fmt = "<p>Error Status: <span style='color:red;'>%d</span></p>";
   char buf[BUFSIZ];
   snprintf(buf, sizeof(buf), fmt, res.status);
@@ -224,7 +224,7 @@ svr.set_error_handler([](const auto& req, auto& res) {
 The exception handler gets called if a user routing handler throws an error.
 
 ```cpp
-svr.set_exception_handler([](const auto& req, auto& res, std::exception_ptr ep) {
+srv.set_exception_handler([](const auto& req, auto& res, std::exception_ptr ep) {
   auto fmt = "<h1>Error 500</h1><p>%s</p>";
   char buf[BUFSIZ];
   try {
@@ -244,7 +244,7 @@ NOTE: if you don't provide the `catch (...)` block for a rethrown exception poin
 ### Pre routing handler
 
 ```cpp
-svr.set_pre_routing_handler([](const auto& req, auto& res) {
+srv.set_pre_routing_handler([](const auto& req, auto& res) {
   if (req.path == "/hello") {
     res.set_content("world", "text/html");
     return Server::HandlerResponse::Handled;
@@ -256,7 +256,7 @@ svr.set_pre_routing_handler([](const auto& req, auto& res) {
 ### Post routing handler
 
 ```cpp
-svr.set_post_routing_handler([](const auto& req, auto& res) {
+srv.set_post_routing_handler([](const auto& req, auto& res) {
   res.set_header("ADDITIONAL_HEADER", "value");
 });
 ```
@@ -264,7 +264,7 @@ svr.set_post_routing_handler([](const auto& req, auto& res) {
 ### 'multipart/form-data' POST data
 
 ```cpp
-svr.Post("/multipart", [&](const auto& req, auto& res) {
+srv.Post("/multipart", [&](const auto& req, auto& res) {
   auto size = req.files.size();
   auto ret = req.has_file("name1");
   const auto& file = req.get_file_value("name1");
@@ -277,7 +277,7 @@ svr.Post("/multipart", [&](const auto& req, auto& res) {
 ### Receive content with a content receiver
 
 ```cpp
-svr.Post("/content_receiver",
+srv.Post("/content_receiver",
   [&](const Request &req, Response &res, const ContentReader &content_reader) {
     if (req.is_multipart_form_data()) {
       // NOTE: `content_reader` is blocking until every form data field is read
@@ -306,7 +306,7 @@ svr.Post("/content_receiver",
 ```cpp
 const size_t DATA_CHUNK_SIZE = 4;
 
-svr.Get("/stream", [&](const Request &req, Response &res) {
+srv.Get("/stream", [&](const Request &req, Response &res) {
   auto data = new std::string("abcdefg");
 
   res.set_content_provider(
@@ -324,7 +324,7 @@ svr.Get("/stream", [&](const Request &req, Response &res) {
 Without content length:
 
 ```cpp
-svr.Get("/stream", [&](const Request &req, Response &res) {
+srv.Get("/stream", [&](const Request &req, Response &res) {
   res.set_content_provider(
     "text/plain", // Content type
     [&](size_t offset, DataSink &sink) {
@@ -343,7 +343,7 @@ svr.Get("/stream", [&](const Request &req, Response &res) {
 ### Chunked transfer encoding
 
 ```cpp
-svr.Get("/chunked", [&](const Request& req, Response& res) {
+srv.Get("/chunked", [&](const Request& req, Response& res) {
   res.set_chunked_content_provider(
     "text/plain",
     [](size_t offset, DataSink &sink) {
@@ -360,7 +360,7 @@ svr.Get("/chunked", [&](const Request& req, Response& res) {
 With trailer:
 
 ```cpp
-svr.Get("/chunked", [&](const Request& req, Response& res) {
+srv.Get("/chunked", [&](const Request& req, Response& res) {
   res.set_header("Trailer", "Dummy1, Dummy2");
   res.set_chunked_content_provider(
     "text/plain",
@@ -384,14 +384,14 @@ By default, the server sends a `100 Continue` response for an `Expect: 100-conti
 
 ```cpp
 // Send a '417 Expectation Failed' response.
-svr.set_expect_100_continue_handler([](const Request &req, Response &res) {
+srv.set_expect_100_continue_handler([](const Request &req, Response &res) {
   return 417;
 });
 ```
 
 ```cpp
 // Send a final status without reading the message body.
-svr.set_expect_100_continue_handler([](const Request &req, Response &res) {
+srv.set_expect_100_continue_handler([](const Request &req, Response &res) {
   return res.status = 401;
 });
 ```
@@ -399,22 +399,22 @@ svr.set_expect_100_continue_handler([](const Request &req, Response &res) {
 ### Keep-Alive connection
 
 ```cpp
-svr.set_keep_alive_max_count(2); // Default is 5
-svr.set_keep_alive_timeout(10);  // Default is 5
+srv.set_keep_alive_max_count(2); // Default is 5
+srv.set_keep_alive_timeout(10);  // Default is 5
 ```
 
 ### Timeout
 
 ```c++
-svr.set_read_timeout(5, 0); // 5 seconds
-svr.set_write_timeout(5, 0); // 5 seconds
-svr.set_idle_interval(0, 100000); // 100 milliseconds
+srv.set_read_timeout(5, 0); // 5 seconds
+srv.set_write_timeout(5, 0); // 5 seconds
+srv.set_idle_interval(0, 100000); // 100 milliseconds
 ```
 
 ### Set maximum payload length for reading a request body
 
 ```c++
-svr.set_payload_max_length(1024 * 1024 * 512); // 512MB
+srv.set_payload_max_length(1024 * 1024 * 512); // 512MB
 ```
 
 ### Server-Sent Events
@@ -428,7 +428,7 @@ Please see [Server example](https://github.com/yhirose/cpp-httplib/blob/master/e
 If you want to set the thread count at runtime, there is no convenient way... But here is how.
 
 ```cpp
-svr.new_task_queue = [] { return new ThreadPool(12); };
+srv.new_task_queue = [] { return new ThreadPool(12); };
 ```
 
 ### Override the default thread pool with yours
@@ -454,7 +454,7 @@ private:
   YourThreadPool pool_;
 };
 
-svr.new_task_queue = [] {
+srv.new_task_queue = [] {
   return new YourThreadPoolTaskQueue(12);
 };
 ```

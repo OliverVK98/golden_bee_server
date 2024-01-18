@@ -17,7 +17,7 @@ public:
     explicit ServerConfig(httplib::SSLServer& server);
     void listen();
 private:
-    httplib::Server& svr;
+    httplib::SSLServer& srv;
     Router router;
     ItemsRoutes items_routes;
     UsersRoutes users_routes;

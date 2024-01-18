@@ -4,12 +4,12 @@
 #include "Server_Config/Server_Config.h"
 #include "Logger/Logger.h"
 
-httplib::SSLServer svr("./cert.pem", "./key.pem");
+httplib::SSLServer srv("cert.pem", "key.pem");
 
-int main(void)
+int main()
 {
     try {
-        ServerConfig server(svr);
+        ServerConfig server(srv);
         server.listen();
     } catch (const std::runtime_error& e) {
         Logger logger;
